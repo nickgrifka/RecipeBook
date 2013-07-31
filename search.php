@@ -23,24 +23,17 @@
     ///////////////////////////////////////////////////////////////////
     // Algorithm
 
-    // Convert all entries to lower case and prepend a ' ' to them
     $size = count($mockRecipeList);
-    for ($i = 0; $i < $size; $i++)
-    {
-        $mockRecipeList[$i] = strtolower($mockRecipeList[$i]);
-        $mockRecipeList[$i] = " " . $mockRecipeList[$i];
-    }
     $results = array();
     $query = strtolower($query);
- 
 
-    // check if the query is a substring of any of the recipes
     for ($i = 0; $i < $size; $i++)
     {
-        if (strpos($mockRecipeList[$i], $query) != 0)
+        if (strpos( (" " . strtolower($mockRecipeList[$i])) , $query) != 0)
         {
             array_push($results, $mockRecipeList[$i]);
         }
+        var_dump(" " . strtolower($mockRecipeList[$i]));
     }
 
     //
