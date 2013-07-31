@@ -1,0 +1,39 @@
+<html>
+<head>
+	<script src='https://cdn.firebase.com/v0/firebase.js'></script>
+	<script src='https://ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js'></script>
+	
+	<script>
+		var usersRef = new Firebase('https://ngrifka.firebaseIO.com/RecipeBook/users');
+		
+		function login()
+		{
+			var username = $('#usernameInput').val();
+			var password = $('#passwordInput').val();
+			
+			//usersRef.push({username: username, password: password});
+			console.log(JSON.stringify(usersRef));
+			
+			
+			
+		}
+	</script>
+</head>
+<body>
+	<div id="background" style="background:green; width:100%; height:100%; padding:30px; ">
+		<div id="container" style="background:yellow; width:95%; height:95%; margin:auto">
+			<div id="sign_in" style="background-color:blue; width:500px; height:300px; padding:50px;">
+					<label>Username:</label>
+					<input type="text" id="usernameInput" name="username" placeholder="username"/>
+					<br/>
+					<label>Password:</label/>
+					<input type="password" id="passwordInput" name="password" placeholder="password"/>
+					<br/>
+				<button id="login" onclick="Javascript:login()">Login</button>
+				<button id="login_fb" ><a href="http://localhost/RecipeBook/login.php">Login with FaceBook</a></button>
+				<button id="sign_up">Sign Up</button>
+			</div>
+		</div>
+	</div>
+</body>
+</html>
