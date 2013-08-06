@@ -32,7 +32,7 @@
 			}
 		}
 		// Finally we can start our application and make whatever api calls we want
-		header("Location: http://localhost/RecipeBook/user.html");
+		header("Location: http://localhost/RecipeBook/user.php");
 	}
 	else
 	{
