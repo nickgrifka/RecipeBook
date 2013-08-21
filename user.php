@@ -51,6 +51,7 @@
 		<p id="showRecipeDescription"></p>
 		
 		<button id="closeShowRecipeWindow">Close</button>
+		<button id="deleteRecipe" style="float:right;">Delete Recipe</button>
 		
 	</div>
 	
@@ -120,6 +121,7 @@
 		// Access the users recipes
 		var userRecipeRef = new Firebase('https://ngrifka.firebaseIO.com/RecipeBook/users/' + fbUser + '/recipes/');
 		var userRecipeSnapshot;
+		var currentDisplayedRecipeRef; // gets set once recipe is shown, only accessed when delete is clicked
 		
 		// make recipe class
 		function Recipe(name, ingredients, description)
@@ -187,16 +189,17 @@
 		
 			// exit add recipe window
 			function exitAddRecipeWindow() {
-				// erase prepended ingredients if any
-				$('p').remove('.extraIngredient');
-
-				// reset fields
-				$('#recipeNameInput').val('');
-				$('#recipeIngredientInput').val('');
-				$('#recipeDescriptionInput').val('');
-			
 				// fade out the window
-				$('#addRecipeWindow').fadeOut('fast');
+				$('#addRecipeWindow').fadeOut('fast', function() {
+					// erase prepended ingredients if any
+					$('p').remove('.extraIngredient');
+					// reset fields
+					$('#recipeNameInput').val('');
+					$('#recipeIngredientInput').val('');
+					$('#recipeDescriptionInput').val('');
+					// erase the global ingredient list
+					ingredientList = [];
+				});
 			}
 		
 			// fire: add recipe
@@ -241,7 +244,6 @@
 				$('#ingredient_field').prepend('<p class="extraIngredient">' + enteredIngredient + '</p>');
 				$('#recipeIngredientInput').focus();
 				ingredientList.push(enteredIngredient);
-			
 			});
 		
 			// fire: cancel add recipe
@@ -251,6 +253,10 @@
 			
 			// shows the recipe window for a particular recipe
 			function showRecipeWindow(recipe, ingredients) {
+				// delete old fields
+				$('#showRecipeName').html('');
+				$('#showRecipeIngredientList').html('');
+				$('#showRecipeDescription').html('');
 				// Fill in name, ingredients, and description
 				$('#showRecipeName').append(recipe.name);
 				$('#showRecipeDescription').append(recipe.description);
@@ -261,6 +267,7 @@
 				}
 				
 				$('#showRecipeWindow').fadeIn('fast');
+				ingredientsList = [];
 			}
 		
 			//fire: show recipe
@@ -276,6 +283,7 @@
 					if (recipeIter.name == recipeName)
 					{
 						recipe = recipeIter;
+						currentDisplayedRecipeRef = recipeSnapshot.ref();
 						// Grab the ingredients and put them in their own array
 						var ingredientsSnapshot = recipeSnapshot.child('ingredients');
 						ingredientsSnapshot.forEach( function(ingredientSnapshot) {
@@ -293,22 +301,39 @@
 			
 			// fire: close show recipe window
 			$('#closeShowRecipeWindow').click( function () {
-				// TODO: reset all of the fields in the window
-				$('#showRecipeWindow').fadeOut('fast');
+				$('#showRecipeWindow').fadeOut('fast', function() {
+					// TODO: reset all of the fields in the window
+					$('#showRecipeName').html('');
+					$('#showRecipeIngredientList').html('');
+					$('#showRecipeDescription').html('');
+				});
+				
+			});
+			
+			// fire: delete recipe
+			$('#deleteRecipe').click( function () {
+				currentDisplayedRecipeRef.remove();
+				$('#closeShowRecipeWindow').click();
 			});
 		
 			// fire: search
 			$('#searchbar').keypress( function (e) {
 				if (e.keyCode == 13)
 				{
-					alert("Search fired");
+					var query = $('#searchbar').val().toLowerCase();
+					var results = new Array();
+					
+					userRecipeSnapshot.forEach( function(recipeSnapshot) {
+						var recipeIter = recipeSnapshot.val();
+						if (recipeIter.name.toLowerCase().indexOf(query) != -1)
+						{
+							results.push(recipeIter.name);
+						}
+					});
+					alert("Results: " + results);
 				}
 			});
 		});
-		
-		
-		
-		// write on fn to load the recipe section from firebase /fbUser/recipes
 	  
 	</script>
 	
