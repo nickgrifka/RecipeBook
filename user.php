@@ -106,7 +106,11 @@
 				
 				<div id="right" style="background:green; width:45%; height:280px; float:right; margin:5px;">
 					<p style="text-align:center; font-size:20px;">Quick Search</p>
-					<input style="height:25px; width:200px; margin-left:125px; border-width:1px; border-color:black; border-style:solid;" type="text" id="searchbar" placeholder="Recipe Name"/>
+					<input style="height:25px; width:300px; margin-left:80px; border-width:1px; border-color:black; border-style:solid;" type="text" id="searchbar" placeholder="Recipe Name"/>
+					
+					<!-- Hidden search results dropdown -->
+					<table id="searchResults" style="width:299px; height:auto; margin-left:81px; background:white;" >
+					</table>
 				</div>
 				
 			</div>
@@ -181,7 +185,7 @@
 					for (var i = 0; i < userRecipeList.length; i++)
 					{
 						var recipeName = userRecipeList[i].name;
-						$('#recipe_list').prepend('<li class="recipe" style="cursor:pointer">' + recipeName + '</li>');
+						$('#recipe_list').prepend('<li class="recipe" style="cursor:default">' + recipeName + '</li>');
 					}
 				}
 			});
@@ -236,14 +240,26 @@
 			
 				exitAddRecipeWindow();
 			});
-		
-			// fire: add ingredient
-			$('#add_ingredient').click( function() {
+			
+			function addIngredient() {
 				var enteredIngredient = $('#recipeIngredientInput').val();
 				$('#recipeIngredientInput').val('');
 				$('#ingredient_field').prepend('<p class="extraIngredient">' + enteredIngredient + '</p>');
 				$('#recipeIngredientInput').focus();
 				ingredientList.push(enteredIngredient);
+			}
+		
+			// fire: add ingredient #1
+			$('#add_ingredient').click( function() {
+				addIngredient();
+			});
+			
+			// fire: add ingredient #2
+			$('#recipeIngredientInput').keypress( function(e) {
+				if (e.which == 13)
+				{
+					addIngredient();
+				}
 			});
 		
 			// fire: cancel add recipe
@@ -317,22 +333,70 @@
 			});
 		
 			// fire: search
-			$('#searchbar').keypress( function (e) {
-				if (e.keyCode == 13)
-				{
+			$('#searchbar').change( function (e) {
+				//alert("keycode is: " + e.keyCode);
+				//if (e.keyCode == 13)
+				//{
+					// clear the results
+					$('#searchResults').html('');
+					
 					var query = $('#searchbar').val().toLowerCase();
 					var results = new Array();
-					
-					userRecipeSnapshot.forEach( function(recipeSnapshot) {
-						var recipeIter = recipeSnapshot.val();
-						if (recipeIter.name.toLowerCase().indexOf(query) != -1)
-						{
-							results.push(recipeIter.name);
-						}
-					});
-					alert("Results: " + results);
-				}
+					if (query != '')
+					{
+						userRecipeSnapshot.forEach( function(recipeSnapshot) {
+							var recipeIter = recipeSnapshot.val();
+							console.log("Comparing " + recipeIter.name.toLowerCase() + " : " + query);
+							if (recipeIter.name.toLowerCase().indexOf(query) != -1)
+							{
+								console.log("Match: " + recipeIter.name.toLowerCase() + " and " + query); 
+								if (results.length >= 8)
+								{
+									console.log("Maxed out at 8 results");
+									// Max results at 8
+									return true;
+								}
+								results.push(recipeIter.name);
+								$('#searchResults').prepend('<tr><td>' + recipeIter.name + '</td></tr>');
+							}
+						});
+					}
+				//}
 			});
+			var oldQuery = '';
+			function search()
+			{
+				var query = $('#searchbar').val().toLowerCase();
+				if (oldQuery != query)
+				{
+					// clear the results
+					$('#searchResults').html('');
+					
+					var query = $('#searchbar').val().toLowerCase();
+					var results = new Array();
+					if (query != '')
+					{
+						userRecipeSnapshot.forEach( function(recipeSnapshot) {
+							var recipeIter = recipeSnapshot.val();
+							console.log("Comparing " + recipeIter.name.toLowerCase() + " : " + query);
+							if (recipeIter.name.toLowerCase().indexOf(query) != -1)
+							{
+								console.log("Match: " + recipeIter.name.toLowerCase() + " and " + query); 
+								if (results.length >= 8)
+								{
+									console.log("Maxed out at 8 results");
+									// Max results at 8
+									return true;
+								}
+								results.push(recipeIter.name);
+								$('#searchResults').prepend('<tr><td>' + recipeIter.name + '</td></tr>');
+							}
+						});
+					}
+				}
+				oldQuery = query;
+			}
+			setInterval(function() {search()}, 50);
 		});
 	  
 	</script>
