@@ -31,6 +31,7 @@
 				$loginUrl = $facebook->getLoginUrl($params);
 			}
 		}
+		$user = 0;
 		// Finally we can start our application and make whatever api calls we want
 		header("Location: http://localhost/RecipeBook/user.php");
 	}

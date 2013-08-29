@@ -79,6 +79,11 @@ $(document).ready( function() {
 			$('#recipeDescriptionInput').val('');
 			// erase the global ingredient list
 			ingredientList = [];
+			
+			//Remove blanket
+			$('#shadowBlanket').animate({opacity: 0.0}, 1000, function(){
+				$('#shadowBlanket').hide();
+			});
 		});
 	}
 
@@ -86,6 +91,8 @@ $(document).ready( function() {
 	$('#addRecipe').click( function() {
 		// open a new window that has entries to add recipe info
 		$('#addRecipeWindow').fadeIn('fast');
+		$('#shadowBlanket').show();
+		$('#shadowBlanket').animate({opacity: 0.75}, 1000, function(){});
 	});
 
 	// fire: save recipe
@@ -144,30 +151,41 @@ $(document).ready( function() {
 	});
 	
 	// Takes out <b></b> html tags produced by the search bar
-	function parseOutTags(htmlRecipeName) {
+	function parseOutTags(htmlRecipeName) {console.log("recipehtmlName: " + htmlRecipeName);
 		var cleanRecipeName = '';
 		var insideTag = 0;
 		for (var i = 0; i < htmlRecipeName.length; i++)
-		{
+		{console.log("clean recipe is: " + cleanRecipeName);
 			if (htmlRecipeName[i] == '<')
 			{
 				i = i + 1;
 				while (htmlRecipeName[i] != '>')
-				{
+				{console.log("skipping: " + htmlRecipeName[i]);
 					i = i + 1;
 				}
 				i = i + 1;
 			}
-			if (i < htmlRecipeName.length)
+			if (i < htmlRecipeName.length && htmlRecipeName[i] != '<')
 			{
 				cleanRecipeName += htmlRecipeName[i];
 			}
 		}
 		return cleanRecipeName;
 	}
-	
+	function hello(){alert("waited");}
 	// shows the recipe window for a particular recipe
 	function showRecipeWindow(recipe, ingredients) {
+		if ($('#showRecipeWindow').css('display') != 'none')
+		{
+			$('#closeShowRecipeWindow').click();
+			setTimeout(function(){continueShowRecipeWindow(recipe,ingredients);}, 300);
+		}
+		else
+		{
+			continueShowRecipeWindow(recipe, ingredients);
+		}
+	}
+	function continueShowRecipeWindow(recipe, ingredients) {
 		// delete old fields
 		$('#showRecipeName').html('');
 		$('#showRecipeIngredientList').html('');
@@ -180,8 +198,11 @@ $(document).ready( function() {
 		{
 			$('#showRecipeIngredientList').append('<li>' + ingredients[i] + '</li>');
 		}
+
+		// $('#showRecipeWindow').fadeIn('fast');
 		
-		$('#showRecipeWindow').fadeIn('fast');
+		$('#showRecipeWindow').show();
+		$('#showRecipeWindow').animate({left: '+=565', display:"show"}, 100);
 		ingredientsList = [];
 	}
 
@@ -218,11 +239,13 @@ $(document).ready( function() {
 	
 	// fire: close show recipe window
 	$('#closeShowRecipeWindow').click( function () {
-		$('#showRecipeWindow').fadeOut('fast', function() {
+		$('#showRecipeWindow').animate({left: '-=565'}, 100, function() {
+		// $('#showRecipeWindow').fadeOut('fast', function() {
 			// TODO: reset all of the fields in the window
 			$('#showRecipeName').html('');
 			$('#showRecipeIngredientList').html('');
 			$('#showRecipeDescription').html('');
+			$('#showRecipeWindow').hide();
 		});
 		
 	});
@@ -265,7 +288,7 @@ $(document).ready( function() {
 							var part1 = recipeIter.name.substring(0, substrIndex);
 							var part2 = recipeIter.name.substring(substrIndex, (substrIndex + query.length));
 							var part3 = recipeIter.name.substring((substrIndex + query.length), lowercaseRecipeName.length);
-							$('#searchResults').prepend('<tr><td class="recipe" style="color:white; background:#242424; cursor:default; padding-left:10px;"><b>'
+							$('#searchResults').prepend('<tr><td class="recipe" style="color:black; background:white; cursor:default; padding-left:10px;"><b>'
 								+ part1 + "</b>" + part2 + "<b>" + part3 + '</b></td></tr>');
 						}
 						else
@@ -274,7 +297,7 @@ $(document).ready( function() {
 							var part1 = recipeIter.name.substring(0,query.length);
 							var part2 = recipeIter.name.substring(substrIndex + query.length, recipeIter.name.length);
 							console.log("Part 1: " + part1 + ", Part 2: " + part2);
-							$('#searchResults').prepend('<tr><td class="recipe" style="color:white; background:#242424; cursor:default; padding-left:10px;">'
+							$('#searchResults').prepend('<tr><td class="recipe" style="color:black; background:white; cursor:default; padding-left:10px;">'
 								+ part1 + "<b>" + part2 + '</b></td></tr>');
 						}
 						
@@ -288,13 +311,13 @@ $(document).ready( function() {
 	
 	// fire: highlight a recipe
 	$('.recipeLink').on('mouseenter', "tr td", function() {
-		$(this).css("background", "#595959");
+		$(this).css("background", "82C74A");
 		
 	});
 	
 	// fire: unhighlight a recipe
 	$('.recipeLink').on('mouseleave', 'tr td', function() {
-		$(this).css('background', '#242424');
+		$(this).css('background', 'white');
 	});
 	
 	
